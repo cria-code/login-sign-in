@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pydantic
+ulid-py
+python-dotenv
+pymongo[srv]==4.6.0
+pytest
+httpx
