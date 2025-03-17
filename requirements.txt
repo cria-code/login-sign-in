@@ -1,6 +1,7 @@
 fastapi
 uvicorn
 pydantic
+pydantic[email]
 ulid-py
 python-dotenv
 pymongo[srv]==4.6.0
