@@ -1,7 +1,13 @@
+"""
+This module deals with models.
+"""
 from pydantic import BaseModel, EmailStr, Field
 
 
 class User(BaseModel):
+    """
+    Represents a User with information.
+    """
     id: str = Field(description="User Google ID")
     email: EmailStr = Field(description="User Email")
     verified_email: bool = Field(description="Email Verified Status")
