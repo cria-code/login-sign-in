@@ -1,17 +1,18 @@
 import os
-from pymongo import MongoClient
 from dotenv import load_dotenv
+from pymongo import MongoClient
 
 load_dotenv()
 
-MONGO_URI = os.getenv("MONGO_URI")
-MONGO_DB_NAME = os.getenv("MONGO_BD")
+MONGO_URL = os.getenv("MONGO_URL")
+MONGO_DB = os.getenv("MONGO_DB")
 
-_client = MongoClient(MONGO_URI)  # create client just one time
-print(f"MONGO_DB_NAME: {repr(MONGO_DB_NAME)}")
-db = _client[MONGO_DB_NAME]  # db already set up
 
 def get_database():
-    """Return a instance of db, without creating a new connection"""
+    """
+    Establishes and returns a connection to the MongoDB database.
+    """
+    client = MongoClient(MONGO_URL)
+    db = client[MONGO_DB]
+    print(MONGO_DB)
     return db
-

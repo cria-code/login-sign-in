@@ -11,8 +11,8 @@ class User (BaseModel):
     email: EmailStr = Field(description="User Email")
     verified_email: bool = Field(description="Email Verified Status")
     picture: Optional[str] = Field(None, description="User Photo")
-    birthdate: Optional[str] = Field(None, description="User Birthdate")
-    gender: Optional[str] = Field(None, description="User Gender")
+    # birthdate: Optional[str] = Field(None, description="User Birthdate")
+    # gender: Optional[str] = Field(None, description="User Gender")
     
 
 # from pydantic import BaseModel, EmailStr, Field

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from services.auth_service import GoogleAuthService
 
 router = APIRouter()
