@@ -1,5 +1,6 @@
 import os
 import httpx
+import logging
 from fastapi import APIRouter
 from starlette.responses import RedirectResponse
 from urllib.parse import urlencode
@@ -8,6 +9,8 @@ from fastapi import HTTPException
 from services.user_service import UserService
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -20,25 +23,30 @@ GOOGLE_USERINFO_URL = os.getenv("GOOGLE_USERINFO_URL")
 GOOGLE_SCOPES = os.getenv("GOOGLE_SCOPES").split(",")
 
 class GoogleAuthService:
+    
     @staticmethod
-    @router.get("/auth/login")
     def login():
-        """Redirect for login page"""
-        params = {
-            "client_id": GOOGLE_CLIENT_ID,
-            "response_type": "code",
-            "scope": " ".join(GOOGLE_SCOPES),
-            "redirect_uri": GOOGLE_REDIRECT_URL,
-            "access_type": "offline",
-            "prompt": "consent"
-        }
-        print(f"Redirect URI: {GOOGLE_REDIRECT_URL}")
-        return RedirectResponse(f"{GOOGLE_AUTH_URL}?{urlencode(params)}")
-
+        """Redirect for login google page"""
+        
+        try:
+            params = {
+                "client_id": GOOGLE_CLIENT_ID,
+                "response_type": "code",
+                "scope": " ".join(GOOGLE_SCOPES),
+                "redirect_uri": GOOGLE_REDIRECT_URL,
+                "access_type": "offline",
+                "prompt": "consent"
+            }
+            logger.info(f"Redirecting to google login: {GOOGLE_AUTH_URL}")
+            return RedirectResponse(f"{GOOGLE_AUTH_URL}?{urlencode(params)}")
+        except Exception as e:
+            logger.error(f"Unexpected error in login(): {e}")
+            raise HTTPException(status_code=500, detail="Internal server error")
+        
     @staticmethod
-    @router.get("/auth/callback")
     def callback(code:str):
-        """Receive an autorization code and change for a access token"""
+        logger.info("Receive an autorization code and change for a access token")
+        
         data = {
             "client_id": GOOGLE_CLIENT_ID,
             "client_secret": GOOGLE_CLIENT_SECRET,
@@ -46,17 +54,24 @@ class GoogleAuthService:
             "grant_type": "authorization_code",
             "redirect_uri": GOOGLE_REDIRECT_URL
         }
-        response = httpx.post(GOOGLE_TOKEN_URL, data=data)
-        token_json = response.json()
         
-        if "access_token" not in token_json:
-            raise HTTPException(status_code=400, detail="Autentication failed")
+        try:
+            response = httpx.post(GOOGLE_TOKEN_URL, data=data)
+            token_json = response.json()
+            
+            if "access_token" not in token_json:
+                raise HTTPException(status_code=400, detail="Autentication failed")
+            
+            headers = {"Authorization": f"Bearer {token_json['access_token']}"}
+            user_data = httpx.get(GOOGLE_USERINFO_URL, headers=headers).json()
+            
+            UserService.create_user(user_data)
+            
+            return {"user_info": user_data, "tokens": token_json}
+        except httpx.HTTPStatusError as e:
+            logger.error(f"HTTP error during token exchange {e}")
+            raise HTTPException(status_code=e.response.status_code, detail="Error during authentication")
         
-        headers = {"Authorization": f"Bearer {token_json['access_token']}"}
-        user_data = httpx.get(GOOGLE_USERINFO_URL, headers=headers).json()
-        
-        UserService.create_user(user_data)
-        
-        return {"user_info": user_data, "tokens": token_json}
-        
-        
+        except Exception as e:
+            logger.error(f"Unexpected error: {e}")
+            raise HTTPException(status_code=500, detail="Internal server error")
