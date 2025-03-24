@@ -13,14 +13,14 @@ class UserStorage:
         try:
             db = db_conn.get_database()
             users_collection = db["users"]
-            existing_user = users_collection.find_one({"google_id": user_data.google_id})
+            users_collection.find_one({"google_id": user_data.google_id})
             
-            if existing_user:
-                users_collection.update_one({"google_id": user_data.google_id}, {"$set": user_data.model_dump()})
-                print("User updated")
-            else:
-                users_collection.insert_one(user_data.model_dump())    
-                print("User inserted")
+            users_collection.update_one(
+                {"google_id": user_data.google_id},
+                {"$set": user_data.model_dump()},
+                upsert=True
+            )
+            print("User Saved or updated")
                 
             for user in users_collection.find():
                 print(user)    
