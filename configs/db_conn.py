@@ -1,9 +1,7 @@
 import os
-import logging
+from configs.log_config import logger
 from dotenv import load_dotenv
 from pymongo import MongoClient
-
-logger = logging.getLogger(__name__)
 
 load_dotenv()
 

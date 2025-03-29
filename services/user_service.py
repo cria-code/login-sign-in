@@ -1,8 +1,6 @@
-import logging
+from configs.log_config import logger
 from models.user_model import User
 from storages.user_storage import UserStorage
-
-logger = logging.getLogger(__name__)
 
 class UserService:
     

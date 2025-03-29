@@ -1,6 +1,6 @@
 import os
 import httpx
-import logging
+from configs.log_config import logger
 from fastapi import APIRouter
 from starlette.responses import RedirectResponse
 from urllib.parse import urlencode
@@ -9,8 +9,6 @@ from fastapi import HTTPException
 from services.user_service import UserService
 
 load_dotenv()
-
-logger = logging.getLogger(__name__)
 
 router = APIRouter()
 

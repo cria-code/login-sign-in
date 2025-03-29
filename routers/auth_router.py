@@ -1,8 +1,6 @@
-import logging
+from configs.log_config import logger
 from fastapi import APIRouter, HTTPException
 from services.auth_service import GoogleAuthService
-
-logger = logging.getLogger(__name__)
 
 router = APIRouter()
 

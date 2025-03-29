@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: login-service
     ports:
-      - "7000:7000"
+      - "8000:8000"
     depends_on:
       - login-database
     networks:

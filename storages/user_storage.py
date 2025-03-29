@@ -1,9 +1,7 @@
-import logging
+from configs.log_config import logger
 from configs import db_conn
 from models.user_model import User
 from pymongo.errors import PyMongoError
-
-logger = logging.getLogger(__name__)
 
 class UserStorage:
     
