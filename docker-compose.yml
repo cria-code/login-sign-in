@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: login-service
+    ports:
+      - "8000:8000"
+    depends_on:
+      - login-database
+    networks:
+      - login_network
+    environment:
+      - MONGO_URI=mongodb://root:example@login-database:27017/
+      - MONGO_DB=login
+
+  login-database:
+    image: mongo:latest
+    container_name: login-database
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27018:27017"
+    networks:
+      - login_network
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+
+networks:
+  login_network:
+    driver: bridge
